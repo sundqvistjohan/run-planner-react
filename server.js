@@ -1,4 +1,5 @@
-const http = require("http");
+const express = require('express')
+const app = express()
 
 let activities = [
   {
@@ -24,10 +25,13 @@ let activities = [
   },
 ];
 
-const app = http.createServer((req, res) => {
-  res.writeHead(200, { "Content-Type": "application/json" });
-  res.end(JSON.stringify(activities));
-});
+app.get('/', (req, res) => {
+  res.send('<h1>Yo worlds!</h1>')
+})
+
+app.get('/activities', (req, res) => {
+  res.json(activities)
+})
 
 const PORT = 3001;
 app.listen(PORT);
