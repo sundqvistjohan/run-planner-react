@@ -26,11 +26,11 @@ let activities = [
 ];
 
 app.get('/', (request, response) => {
-  res.send('<h1>Yo worlds!</h1>')
+  response.send('<h1>Yo worlds!</h1>')
 })
 
 app.get('/activities', (request, response) => {
-  res.json(activities)
+  response.json(activities)
 })
 
 app.get('/activities/:id', (request, response) => {
@@ -42,6 +42,13 @@ app.get('/activities/:id', (request, response) => {
   } else {
     response.status(400).end()
   }
+})
+
+app.delete('/activities/:id', (request, response) => {
+  const id = parseInt(request.params.id)
+  activities = activities.filter(activity => activity.id !== id)
+
+  response.status(204).end()
 })
 
 const PORT = 3001;
