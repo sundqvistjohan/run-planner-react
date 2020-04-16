@@ -33,6 +33,13 @@ app.get('/activities', (req, res) => {
   res.json(activities)
 })
 
+app.get('/activities/:id', (req, res) => {
+  const id = parseInt(req.params.id)
+  console.log(id)
+  const activity = activities.find(activity => activity.id === id)
+  res.json(activity)
+})
+
 const PORT = 3001;
 app.listen(PORT);
 console.log(`Server running on port ${PORT}`);
