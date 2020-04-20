@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getActivities } from "./activities";
+import { getActivities } from "../modules/activities";
 
 function Planner() {
   let activitiesList;
