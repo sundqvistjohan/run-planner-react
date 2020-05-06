@@ -1,40 +1,32 @@
 const express = require("express");
-const cors = require('cors')
+const cors = require("cors");
+const mongoose = require("mongoose");
 const app = express();
 
-app.use(cors())
+app.use(cors());
 app.use(express.json());
 
-let activities = [
-  {
-    id: 1,
-    type: "distance",
-    intervals: 1,
-    length: 12,
-    date: "2020-04-15T16:30:00.000Z",
-  },
-  {
-    id: 2,
-    type: "interval",
-    intervals: 8,
-    length: 1,
-    date: "2020-04-16T16:30:00.000Z",
-  },
-  {
-    id: 3,
-    type: "threshhold",
-    intervals: 1,
-    length: 8,
-    date: "2020-04-16T16:30:00.000Z",
-  },
-];
+const url = `mongodb+srv://sundq:${process.env.REACT_APP_MONGO_DB_PASSWORD}@runplanner-yrvwi.mongodb.net/test?retryWrites=true&w=majority`;
+
+mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true });
+
+const activitySchema = new mongoose.Schema({
+  type: String,
+  intervals: Number,
+  length: Number,
+  date: Date,
+});
+
+const Activity = mongoose.model("Activity", acti);
 
 app.get("/", (request, response) => {
   response.send("<h1>Yo worlds!</h1>");
 });
 
 app.get("/activities", (request, response) => {
-  response.json(activities);
+  Activity.find({}).then((activities) => {
+    response.json(activities);
+  });
 });
 
 app.get("/activities/:id", (request, response) => {
@@ -62,12 +54,12 @@ const generateId = () => {
 };
 
 app.post("/activities", (request, response) => {
-  const body = request.body
-  
+  const body = request.body;
+
   if (!body.type || !body.length) {
     return response.status(400).json({
-      error: "Missing param(s)"
-    })
+      error: "Missing param(s)",
+    });
   }
 
   const activity = {
@@ -75,8 +67,8 @@ app.post("/activities", (request, response) => {
     intervals: body.intervals || 1,
     length: body.length,
     date: new Date(),
-    id: generateId()
-  }
+    id: generateId(),
+  };
 
   activities = activities.concat(activity);
   response.json(activity);
