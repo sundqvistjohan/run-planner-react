@@ -6,6 +6,8 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+require('dotenv').config()
+
 const url = `mongodb+srv://sundq:${process.env.REACT_APP_MONGO_DB_PASSWORD}@runplanner-yrvwi.mongodb.net/test?retryWrites=true&w=majority`;
 
 mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true });
@@ -17,7 +19,7 @@ const activitySchema = new mongoose.Schema({
   date: Date,
 });
 
-const Activity = mongoose.model("Activity", acti);
+const Activity = mongoose.model("Activity", activitySchema);
 
 app.get("/", (request, response) => {
   response.send("<h1>Yo worlds!</h1>");
