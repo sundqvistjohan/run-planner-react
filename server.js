@@ -1,14 +1,13 @@
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
-const app = express();
+require('dotenv').config()
 
+const app = express();
 app.use(cors());
 app.use(express.json());
 
-require('dotenv').config()
-
-const url = `mongodb+srv://sundq:${process.env.REACT_APP_MONGO_DB_PASSWORD}@runplanner-yrvwi.mongodb.net/test?retryWrites=true&w=majority`;
+const url = `mongodb+srv://sundq:${process.env.REACT_APP_MONGO_DB_PASSWORD}@runplanner-yrvwi.mongodb.net/run-planner?retryWrites=true&w=majority`;
 
 mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true });
 
@@ -19,6 +18,14 @@ const activitySchema = new mongoose.Schema({
   date: Date,
 });
 
+activitySchema.set('toJSON', {
+  transform: (document, returnedObject) => {
+    returnedObject.id = returnedObject._id.toString()
+    delete returnedObject._id
+    delete returnedObject.__v
+  }
+})
+
 const Activity = mongoose.model("Activity", activitySchema);
 
 app.get("/", (request, response) => {
@@ -27,7 +34,7 @@ app.get("/", (request, response) => {
 
 app.get("/activities", (request, response) => {
   Activity.find({}).then((activities) => {
-    response.json(activities);
+    response.json(activities.map(activity => activity.toJSON()));
   });
 });
 
