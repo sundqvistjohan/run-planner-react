@@ -21,11 +21,15 @@ app.get("/activities", (request, response) => {
 app.get("/activities/:id", (request, response) => {
   Activity.findById(request.params.id)
     .then((activity) => {
-      response.json(activity.toJSON());
+      if (activity) {
+        response.json(activity.toJSON());
+      } else {
+        response.status(404).end();
+      }
     })
     .catch((error) => {
       console.log(error);
-      response.status(404).end();
+      response.status(400).send({ error: 'incorrect id format'})
     });
 });
 
