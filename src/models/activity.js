@@ -1,6 +1,8 @@
 require("dotenv").config();
 const mongoose = require("mongoose");
 
+mongoose.set("useFindAndModify", false);
+
 const url = process.env.REACT_APP_MONGO_URI;
 
 console.log("connecting to", url);

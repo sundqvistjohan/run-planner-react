@@ -18,7 +18,7 @@ app.get("/activities", (request, response) => {
   });
 });
 
-app.get("/activities/:id", (request, response) => {
+app.get("/activities/:id", (request, response, next) => {
   Activity.findById(request.params.id)
     .then((activity) => {
       if (activity) {
@@ -27,10 +27,7 @@ app.get("/activities/:id", (request, response) => {
         response.status(404).end();
       }
     })
-    .catch((error) => {
-      console.log(error);
-      response.status(400).send({ error: 'incorrect id format'})
-    });
+    .catch((error) => next(error));
 });
 
 app.post("/activities", (request, response) => {
@@ -54,12 +51,47 @@ app.post("/activities", (request, response) => {
   });
 });
 
-app.delete("/activities/:id", (request, response) => {
-  const id = parseInt(request.params.id);
-  activities = activities.filter((activity) => activity.id !== id);
+app.put("/activities/:id", (request, response, next) => {
+  const body = request.body;
 
-  response.status(204).end();
+  const activity = {
+    type: body.type,
+    intervals: body.intervals || 1,
+    length: body.length,
+  };
+
+  Activity.findByIdAndUpdate(request.params.id, activity, { new: true })
+    .then((updatedActivity) => {
+      response.json(updatedActivity.toJSON());
+    })
+    .catch((error) => next(error));
 });
+
+app.delete("/activities/:id", (request, response, next) => {
+  Activity.findByIdAndRemove(request.params.id)
+    .then((result) => {
+      response.status(204).end();
+    })
+    .catch((error) => next(error));
+});
+
+const unknownEndpoint = (request, response) => {
+  response.status(400).send({ error: "unknown endpoint" });
+};
+
+app.use(unknownEndpoint);
+
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message);
+
+  if (error.name === "CastError") {
+    return response.status(400).send({ error: "incorrect id format" });
+  }
+
+  next(error);
+};
+
+app.use(errorHandler);
 
 const PORT = 3001;
 app.listen(PORT);
