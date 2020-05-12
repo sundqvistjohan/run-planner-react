@@ -19,9 +19,14 @@ app.get("/activities", (request, response) => {
 });
 
 app.get("/activities/:id", (request, response) => {
-  Activity.findById(request.params.id).then((activity) => {
-    response.json(activity.toJSON);
-  });
+  Activity.findById(request.params.id)
+    .then((activity) => {
+      response.json(activity.toJSON());
+    })
+    .catch((error) => {
+      console.log(error);
+      response.status(404).end();
+    });
 });
 
 app.post("/activities", (request, response) => {
@@ -51,7 +56,6 @@ app.delete("/activities/:id", (request, response) => {
 
   response.status(204).end();
 });
-
 
 const PORT = 3001;
 app.listen(PORT);
