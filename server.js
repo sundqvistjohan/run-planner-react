@@ -30,7 +30,7 @@ app.get("/activities/:id", (request, response, next) => {
     .catch((error) => next(error));
 });
 
-app.post("/activities", (request, response) => {
+app.post("/activities", (request, response, next) => {
   const body = request.body;
 
   if (!body.type || !body.length) {
@@ -43,12 +43,15 @@ app.post("/activities", (request, response) => {
     type: body.type,
     intervals: body.intervals || 1,
     length: body.length,
-    date: new Date(),
+    dateTime: body.dateTime,
   });
 
-  activity.save().then((savedActivity) => {
-    response.json(savedActivity.toJSON());
-  });
+  activity
+    .save()
+    .then((savedActivity) => {
+      response.json(savedActivity.toJSON());
+    })
+    .catch((error) => next(error));
 });
 
 app.put("/activities/:id", (request, response, next) => {
@@ -58,6 +61,7 @@ app.put("/activities/:id", (request, response, next) => {
     type: body.type,
     intervals: body.intervals || 1,
     length: body.length,
+    dateTime: body.dateTime,
   };
 
   Activity.findByIdAndUpdate(request.params.id, activity, { new: true })
@@ -86,6 +90,8 @@ const errorHandler = (error, request, response, next) => {
 
   if (error.name === "CastError") {
     return response.status(400).send({ error: "incorrect id format" });
+  } else if (error.name === "ValidationError") {
+    return response.status(400).json({ error: error.message });
   }
 
   next(error);

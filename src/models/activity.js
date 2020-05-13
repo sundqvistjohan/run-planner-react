@@ -17,10 +17,21 @@ mongoose
   });
 
 const activitySchema = new mongoose.Schema({
-  type: String,
-  intervals: Number,
-  length: Number,
-  date: Date,
+  type: {
+    type: String,
+    required: true,
+  },
+  intervals: {
+    type: Number,
+  },
+  length: {
+    type: Number,
+    required: true,
+  },
+  dateTime: {
+    type: Date,
+    required: true,
+  },
 });
 
 activitySchema.set("toJSON", {
